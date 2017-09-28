@@ -95,18 +95,22 @@ function addListeners() {
     rightcontent.addEventListener('dragover', dragOver);
 }
 
+function applyFilter(item, str) {
+    let  fio = item.children[1].firstChild.textContent;
+    if (fio.toLowerCase().indexOf(str.toLowerCase()) > -1)
+        item.classList.remove('hidden');
+    else
+        item.classList.add('hidden');
+}
+
 document.addEventListener('input', (e) => {
     let searchStr = e.target.value.trim();
     let list = document.getElementById((e.target.id == 'leftsearch') ? 'leftcontent' : 'rightcontent').children;
 
     for (let i = 0; i < list.length; i++) {
         let item = list[i];
-        let fio = item.children[1].firstChild.textContent;
 
-        if (fio.toLowerCase().indexOf(searchStr.toLowerCase()) > -1)
-            list[i].classList.remove('hidden');
-        else
-            list[i].classList.add('hidden');
+        applyFilter(item, searchStr);
     }
 });
 
@@ -116,6 +120,7 @@ leftlist.addEventListener('click', (e) => {
     if (target.tagName == 'SPAN') {
         target.className = 'fa fa-times';
         rightcontent.appendChild(target.parentElement.parentElement);
+        applyFilter(target.parentElement.parentElement, rightsearch.value.trim());
     }
 });
 rightlist.addEventListener('click', (e) => {
@@ -124,6 +129,7 @@ rightlist.addEventListener('click', (e) => {
     if (target.tagName == 'SPAN') {
         target.className = 'fa fa-plus';
         leftcontent.appendChild(target.parentElement.parentElement);
+        applyFilter(target.parentElement.parentElement, leftsearch.value.trim());
     }
 });
 saveBtn.addEventListener('click', () => {
@@ -156,10 +162,12 @@ function dragDrop(e) {
     targetList.insertBefore(movableElement, sibling);
     if (e.target.closest(".content__list").id == "leftcontent") {
         movableElement.lastElementChild.firstElementChild.className = 'fa fa-plus';
+        applyFilter(movableElement, leftsearch.value.trim());
     } else if (e.target.closest(".content__list").id == "rightcontent") {
         movableElement.lastElementChild.firstElementChild.className = 'fa fa-times';
+        applyFilter(movableElement, rightsearch.value.trim());
     }
     e.stopPropagation();
-    
+
     return false;
 }
